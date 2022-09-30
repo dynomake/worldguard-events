@@ -7,6 +7,7 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
 import com.sk89q.worldguard.protection.regions.RegionQuery;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
@@ -90,6 +91,19 @@ public class WorldGuardEvents extends JavaPlugin implements Listener {
         
         RegionQuery query = container.createQuery();
         ApplicableRegionSet set = query.getApplicableRegions(BukkitAdapter.adapt(player.getLocation()));
+        return set.getRegions();
+    }
+    /**
+     * Gets the regions in location.
+     *
+     * @param loc Location to get regions.
+     * @return Set of WorldGuard protected regions that is currently in this location.
+     */
+    @Nonnull
+    public static Set<ProtectedRegion> getRegions(Location loc)
+    {
+        RegionQuery query = container.createQuery();
+        ApplicableRegionSet set = query.getApplicableRegions(BukkitAdapter.adapt(loc));
         return set.getRegions();
     }
     
