@@ -3,9 +3,9 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>net.raidstone</groupId>
+    <groupId>com.joaovictormundel</groupId>
     <artifactId>WorldGuardEvents</artifactId>
-    <version>1.18.1</version>
+    <version>1.18.2</version>
 
     <name>WorldGuard Events</name>
     <description>Plugin that fires events when a player enters or leaves a WorldGuard area.</description>
