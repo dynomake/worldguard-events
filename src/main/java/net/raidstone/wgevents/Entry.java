@@ -7,6 +7,7 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.session.MoveType;
 import com.sk89q.worldguard.session.Session;
 import com.sk89q.worldguard.session.handler.Handler;
+import lombok.NonNull;
 import net.raidstone.wgevents.events.*;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
@@ -21,53 +22,48 @@ import java.util.Set;
  * @since 3/3/19
  */
 public class Entry extends Handler implements Listener {
-    
-    public final PluginManager pm = Bukkit.getPluginManager();
-    public static final Factory factory = new Factory();
-    
-    public static class Factory extends Handler.Factory<Entry> {
-        @Override
-        public Entry create(Session session) {
-            return new Entry(session);
-        }
-    }
-    
-    public Entry(Session session) {
+
+    private final PluginManager pluginManager;
+    public Entry(@NonNull Session session, @NonNull PluginManager pluginManager) {
         super(session);
+        this.pluginManager = pluginManager;
     }
-    
+
     @Override
-    public boolean onCrossBoundary(LocalPlayer player, Location from, Location to, ApplicableRegionSet toSet, Set<ProtectedRegion> entered, Set<ProtectedRegion> left, MoveType moveType)
-    {
-        RegionsChangedEvent rce = new RegionsChangedEvent(player.getUniqueId(), left, entered);
-        pm.callEvent(rce);
-        if(rce.isCancelled()) return false;
-        
-        RegionsEnteredEvent ree = new RegionsEnteredEvent(player.getUniqueId(), entered);
-        pm.callEvent(ree);
-        if(ree.isCancelled()) return false;
-        
-        RegionsLeftEvent rle = new RegionsLeftEvent(player.getUniqueId(), left);
-        pm.callEvent(rle);
-        if(rle.isCancelled()) return false;
-        
-        for(ProtectedRegion r : entered) {
-            RegionEnteredEvent regentered = new RegionEnteredEvent(player.getUniqueId(), r);
-            pm.callEvent(regentered);
-            if(regentered.isCancelled()) return false;
+    public boolean onCrossBoundary(LocalPlayer player, Location from, Location to, ApplicableRegionSet toSet, Set<ProtectedRegion> entered, Set<ProtectedRegion> left, MoveType moveType) {
+        RegionsChangedEvent regionsChangedEvent = new RegionsChangedEvent(player.getUniqueId(), left, entered);
+        pluginManager.callEvent(regionsChangedEvent);
+        if (regionsChangedEvent.isCancelled())
+            return false;
+
+        RegionsEnteredEvent regionsEnteredEvent = new RegionsEnteredEvent(player.getUniqueId(), entered);
+        pluginManager.callEvent(regionsEnteredEvent);
+        if (regionsEnteredEvent.isCancelled())
+            return false;
+
+        RegionsLeftEvent regionsLeftEvent = new RegionsLeftEvent(player.getUniqueId(), left);
+        pluginManager.callEvent(regionsLeftEvent);
+
+        if (regionsLeftEvent.isCancelled())
+            return false;
+
+        for (ProtectedRegion region : entered) {
+            RegionEnteredEvent regionEnteredEvent = new RegionEnteredEvent(player.getUniqueId(), region);
+            pluginManager.callEvent(regionEnteredEvent);
+
+            if (regionEnteredEvent.isCancelled())
+                return false;
         }
-    
-    
-        for(ProtectedRegion r : left) {
-            RegionLeftEvent regleft = new RegionLeftEvent(player.getUniqueId(), r);
-            pm.callEvent(regleft);
-            if(regleft.isCancelled()) return false;
+
+
+        for (ProtectedRegion region : left) {
+            RegionLeftEvent regionLeftEvent = new RegionLeftEvent(player.getUniqueId(), region);
+            pluginManager.callEvent(regionLeftEvent);
+
+            if (regionLeftEvent.isCancelled())
+                return false;
         }
+
         return true;
     }
-    
-    
-    
-    
-
 }
